@@ -3,8 +3,13 @@
 #include <Arduino.h>
 #include <Stream.h>
 
-#define TIMEOUT 1000;
-
+#define TIMEOUT 500;
+// #define DEBUG_BLUETOOTH 0;
+typedef struct{
+	char address[12]; //this should really be 2 ints or something
+	// char name[12], //only store the first 12 chars,
+	char cod[12];
+} BluetoothDevice;
 class Bluemate{
 
 	public:
@@ -12,18 +17,20 @@ class Bluemate{
 	Bluemate(Stream* stream);
 	boolean connectToDevice(char* hexAddress);
 	boolean setMode();
-	boolean setBaudRate();
+	boolean setBaudRate(int rate);
 	void begin();
 	boolean enterCommandMode();
 	boolean exitCommandMode();
 	void sendCommand(char* command, boolean includeEndline);
+	int scanForDevices(BluetoothDevice* devices[3]);
 
 
 	private:
-	char _buffer[30];
+	char _buffer[45];
 	boolean isInCommandMode(boolean useCache);
 	boolean _inCommandMode;
 	boolean waitAndEvaluateResponse(char* response);
+	boolean waitAndEvaluateResponse(char* response, int timeout);
 	Stream* _stream;
 
 	/*
